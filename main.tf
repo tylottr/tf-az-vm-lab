@@ -12,12 +12,12 @@ resource "tls_private_key" "main_ssh" {
 }
 
 resource "local_file" "main_ssh" {
-  filename = ".terraform/.ssh/main"
+  filename          = ".terraform/.ssh/main"
   sensitive_content = tls_private_key.main_ssh.private_key_pem
 
   provisioner "local-exec" {
     on_failure = continue
-    
+
     command = "chmod 500 .terraform/.ssh/main"
   }
 }

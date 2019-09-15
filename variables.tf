@@ -69,20 +69,20 @@ locals {
   vm_os_platforms = {
     ubuntu = {
       publisher = "Canonical"
-      offer = "UbuntuServer"
-      sku = "18.04-LTS"
+      offer     = "UbuntuServer"
+      sku       = "18.04-LTS"
     }
 
     centos = {
       publisher = "OpenLogic"
-      offer = "CentOS"
-      sku = "7-CI"
+      offer     = "CentOS"
+      sku       = "7-CI"
     }
   }
 
   vm_os = {
     publisher = lookup(local.vm_os_platforms, lower(var.vm_os), local.vm_os_platforms.ubuntu).publisher
-    offer = lookup(local.vm_os_platforms, lower(var.vm_os), local.vm_os_platforms.ubuntu).offer
-    sku = lookup(local.vm_os_platforms, lower(var.vm_os), local.vm_os_platforms.ubuntu).sku
+    offer     = lookup(local.vm_os_platforms, lower(var.vm_os), local.vm_os_platforms.ubuntu).offer
+    sku       = lookup(local.vm_os_platforms, lower(var.vm_os), local.vm_os_platforms.ubuntu).sku
   }
 }
