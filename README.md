@@ -1,4 +1,4 @@
-Terraform: Hub-Spoke Lab Environment
+Terraform: VM Lab Environment
 ====================================
 
 This template will create a hub-spoke environment for lab purposes.
