@@ -25,8 +25,7 @@ resource "local_file" "main_ssh" {
 # Resources
 ## Resource Group
 resource "azurerm_resource_group" "main" {
-  name = "${var.resource_prefix}-rg"
-
+  name     = "${var.resource_prefix}-rg"
   location = var.location
   tags     = var.tags
 }
