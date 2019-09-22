@@ -33,10 +33,10 @@ These are the variables used along with their defaults. For any without a value 
 |tags|Tags given to the resources created by this template|{}|
 |vnet_prefix|CIDR prefix for the VNet|10.100.0.0/24|
 |vm_public_access|Flag used to enable public access to spoke VMs|false|
-|vm_username|Username for the VMs|labadmin|
+|vm_username|Username for the VMs|vmadmin|
 |vm_os|VM Operating system (Linux - ubuntu or centos)|ubuntu|
 |vm_size|VM Size for the VMs|Standard_B1s|
-|vm_count|Number of VMs to deploy (Deployed in a round-robin fashion across two subnets)|3|
+|vm_count|Number of VMs to deploy|3|
 
 Outputs
 -------

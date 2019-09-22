@@ -35,7 +35,7 @@ variable "vm_public_access" {
 variable "vm_username" {
   description = "Username for the VMs"
   type        = string
-  default     = "labadmin"
+  default     = "vmadmin"
 }
 
 variable "vm_os" {
