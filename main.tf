@@ -160,4 +160,8 @@ resource "azurerm_virtual_machine" "main" {
     create_option = "FromImage"
     disk_size_gb  = var.vm_disk_size
   }
+
+  identity {
+    type = "SystemAssigned"
+  }
 }
