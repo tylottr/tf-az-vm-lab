@@ -36,7 +36,7 @@ These are the variables used along with their defaults. For any without a value 
 |vm_username|Username for the VMs|vmadmin|
 |vm_os|VM Operating system (Linux - ubuntu or centos)|ubuntu|
 |vm_size|VM Size for the VMs|Standard_B1s|
-|vm_count|Number of VMs to deploy|3|
+|vm_count|Number of VMs to deploy|1|
 
 Outputs
 -------

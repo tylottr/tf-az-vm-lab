@@ -57,9 +57,9 @@ variable "vm_disk_size" {
 }
 
 variable "vm_count" {
-  description = "Number of VMs to deploy (Deployed in a round-robin fashion across two subnets)"
+  description = "Number of VMs to deploy"
   type        = number
-  default     = 3
+  default     = 1
 }
 
 # Locals
