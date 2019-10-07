@@ -1,17 +1,17 @@
 # Global
-variable "location" {
+variable location {
   description = "The location of this deployment"
   type        = string
   default     = "UK South"
 }
 
-variable "resource_prefix" {
+variable resource_prefix {
   description = "A prefix for the name of the resource, used to generate the resource names"
   type        = string
   default     = "vmlab"
 }
 
-variable "tags" {
+variable tags {
   description = "Tags given to the resources created by this template"
   type        = map(string)
   default     = {}
@@ -19,44 +19,44 @@ variable "tags" {
 
 # Resource-specific
 ## VNET
-variable "vnet_prefix" {
+variable vnet_prefix {
   description = "CIDR prefix for the VNet"
   type        = string
   default     = "10.100.0.0/24"
 }
 
 ## Compute
-variable "vm_public_access" {
+variable vm_public_access {
   description = "Flag used to enable public access to spoke VMs"
   type        = bool
   default     = false
 }
 
-variable "vm_username" {
+variable vm_username {
   description = "Username for the VMs"
   type        = string
   default     = "vmadmin"
 }
 
-variable "vm_os" {
+variable vm_os {
   description = "VM Operating system (Linux - centos or ubuntu)"
   type        = string
   default     = "ubuntu"
 }
 
-variable "vm_size" {
+variable vm_size {
   description = "VM Size for the VMs"
   type        = string
   default     = "Standard_B1s"
 }
 
-variable "vm_disk_size" {
+variable vm_disk_size {
   description = "VM disk size for the VMs in GB (Minimum 30)"
   type        = number
   default     = 30
 }
 
-variable "vm_count" {
+variable vm_count {
   description = "Number of VMs to deploy"
   type        = number
   default     = 1
