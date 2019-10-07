@@ -7,18 +7,23 @@ resource "random_integer" "main" {
   max = 9999
 }
 
-resource "tls_private_key" "main_ssh" {
+resource "tls_private_key" "main" {
   algorithm = "RSA"
 }
 
-resource "local_file" "main_ssh" {
-  filename          = ".terraform/.ssh/main"
-  sensitive_content = tls_private_key.main_ssh.private_key_pem
+resource "local_file" "main_ssh_public" {
+  filename          = ".terraform/.ssh/id_rsa.pub"
+  sensitive_content = tls_private_key.main.public_key_openssh
+}
+
+resource "local_file" "main_ssh_private" {
+  filename          = ".terraform/.ssh/id_rsa"
+  sensitive_content = tls_private_key.main.private_key_pem
 
   provisioner "local-exec" {
     on_failure = continue
 
-    command = "chmod 500 .terraform/.ssh/main"
+    command = "chmod 500 .terraform/.ssh/id_rsa"
   }
 }
 
@@ -143,7 +148,7 @@ resource "azurerm_virtual_machine" "main" {
     ssh_keys {
       path = "/home/${var.vm_username}/.ssh/authorized_keys"
 
-      key_data = tls_private_key.main_ssh.public_key_openssh
+      key_data = tls_private_key.main.public_key_openssh
     }
   }
 
