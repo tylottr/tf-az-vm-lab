@@ -1,22 +1,22 @@
 # Data
-data "azurerm_client_config" "main" {
+data azurerm_client_config main {
 }
 
-resource "random_integer" "main" {
+resource random_integer main {
   min = 0
   max = 9999
 }
 
-resource "tls_private_key" "main" {
+resource tls_private_key main {
   algorithm = "RSA"
 }
 
-resource "local_file" "main_ssh_public" {
+resource local_file main_ssh_public {
   filename          = ".terraform/.ssh/id_rsa.pub"
   sensitive_content = tls_private_key.main.public_key_openssh
 }
 
-resource "local_file" "main_ssh_private" {
+resource local_file main_ssh_private {
   filename          = ".terraform/.ssh/id_rsa"
   sensitive_content = tls_private_key.main.private_key_pem
   file_permission   = "0500"
@@ -24,14 +24,14 @@ resource "local_file" "main_ssh_private" {
 
 # Resources
 ## Resource Group
-resource "azurerm_resource_group" "main" {
+resource azurerm_resource_group main {
   name     = "${var.resource_prefix}-rg"
   location = var.location
   tags     = var.tags
 }
 
 ## Networking
-resource "azurerm_network_security_group" "main" {
+resource azurerm_network_security_group main {
   name                = "${var.resource_prefix}-default-nsg"
   resource_group_name = azurerm_virtual_network.main.resource_group_name
   location            = azurerm_virtual_network.main.location
@@ -77,7 +77,7 @@ resource "azurerm_network_security_group" "main" {
   }
 }
 
-resource "azurerm_virtual_network" "main" {
+resource azurerm_virtual_network main {
   name                = "${var.resource_prefix}-vnet"
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
@@ -85,7 +85,7 @@ resource "azurerm_virtual_network" "main" {
   address_space       = [var.vnet_prefix]
 }
 
-resource "azurerm_subnet" "main" {
+resource azurerm_subnet main {
   name                      = "default"
   resource_group_name       = azurerm_virtual_network.main.resource_group_name
   virtual_network_name      = azurerm_virtual_network.main.name
@@ -94,7 +94,7 @@ resource "azurerm_subnet" "main" {
 }
 
 ## Compute
-resource "azurerm_public_ip" "main" {
+resource azurerm_public_ip main {
   count               = var.vm_public_access ? var.vm_count : 0
   name                = "${local.vm_name}${count.index + 1}-pip"
   resource_group_name = azurerm_resource_group.main.name
@@ -104,7 +104,7 @@ resource "azurerm_public_ip" "main" {
   domain_name_label   = "${local.vm_name}${count.index + 1}"
 }
 
-resource "azurerm_network_interface" "main" {
+resource azurerm_network_interface main {
   count               = var.vm_count
   name                = "${local.vm_name}${count.index + 1}-nic"
   tags                = var.tags
@@ -121,7 +121,7 @@ resource "azurerm_network_interface" "main" {
   }
 }
 
-resource "azurerm_virtual_machine" "main" {
+resource azurerm_virtual_machine main {
   count                            = var.vm_count
   name                             = "${local.vm_name}${count.index + 1}"
   resource_group_name              = azurerm_resource_group.main.name
