@@ -19,12 +19,7 @@ resource "local_file" "main_ssh_public" {
 resource "local_file" "main_ssh_private" {
   filename          = ".terraform/.ssh/id_rsa"
   sensitive_content = tls_private_key.main.private_key_pem
-
-  provisioner "local-exec" {
-    on_failure = continue
-
-    command = "chmod 500 .terraform/.ssh/id_rsa"
-  }
+  file_permission   = "0500"
 }
 
 # Resources
