@@ -5,7 +5,7 @@ terraform {
 
 # Providers
 provider "azurerm" {
-  version = "~> 1.33"
+  version = "~> 1.35"
 }
 
 provider "random" {
@@ -13,7 +13,7 @@ provider "random" {
 }
 
 provider "local" {
-  version = "~> 1.3"
+  version = "~> 1.4"
 }
 
 provider "tls" {
