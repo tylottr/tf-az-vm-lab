@@ -140,6 +140,7 @@ resource "azurerm_virtual_machine" "main" {
   os_profile {
     computer_name  = "${local.vm_name}${count.index + 1}"
     admin_username = var.vm_username
+    custom_data    = null
   }
 
   storage_image_reference {
