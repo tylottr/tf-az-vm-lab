@@ -53,7 +53,7 @@ variable "vm_size" {
 variable "vm_disk_size" {
   description = "VM disk size for the VMs in GB (Minimum 30)"
   type        = number
-  default     = 30
+  default     = 32
 }
 
 variable "vm_count" {
