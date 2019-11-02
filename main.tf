@@ -150,10 +150,11 @@ resource "azurerm_virtual_machine" "main" {
   }
 
   storage_os_disk {
-    name          = "${local.vm_name}${count.index + 1}-osdisk"
-    caching       = "ReadWrite"
-    create_option = "FromImage"
-    disk_size_gb  = var.vm_disk_size
+    name              = "${local.vm_name}${count.index + 1}-osdisk"
+    caching           = "ReadWrite"
+    create_option     = "FromImage"
+    disk_size_gb      = var.vm_disk_size
+    managed_disk_type = var.vm_disk_type
   }
 
   os_profile_linux_config {

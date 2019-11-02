@@ -50,6 +50,12 @@ variable "vm_size" {
   default     = "Standard_B1s"
 }
 
+variable "vm_disk_type" {
+  description = "VM disk type for the VMs"
+  type        = string
+  default     = "Standard_LRS"
+}
+
 variable "vm_disk_size" {
   description = "VM disk size for the VMs in GB (Minimum 30)"
   type        = number
