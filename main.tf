@@ -1,10 +1,9 @@
 # Data
-data "azurerm_client_config" "main" {
-}
+data "azurerm_client_config" "main" {}
 
 resource "random_integer" "main" {
   min = 0
-  max = 9999
+  max = 99
 }
 
 resource "tls_private_key" "main" {
