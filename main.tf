@@ -77,7 +77,7 @@ resource "azurerm_subnet" "main" {
   resource_group_name = azurerm_virtual_network.main.resource_group_name
 
   virtual_network_name      = azurerm_virtual_network.main.name
-  address_prefix            = cidrsubnet(azurerm_virtual_network.main.address_space[0], 2, 0)
+  address_prefix            = cidrsubnet(var.vnet_prefix, 2, 0)
   network_security_group_id = azurerm_network_security_group.main.id
 }
 
