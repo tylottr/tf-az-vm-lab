@@ -1,7 +1,7 @@
 # Data
 data "azurerm_client_config" "current" {}
 
-resource "random_integer" "main" {
+resource "random_integer" "entropy" {
   min = 0
   max = 99
 }
