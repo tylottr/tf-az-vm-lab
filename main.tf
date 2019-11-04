@@ -76,8 +76,8 @@ resource "azurerm_subnet" "main" {
   name                = "default"
   resource_group_name = azurerm_virtual_network.main.resource_group_name
 
-  virtual_network_name      = azurerm_virtual_network.main.name
-  address_prefix            = cidrsubnet(var.vnet_prefix, 2, 0)
+  virtual_network_name = azurerm_virtual_network.main.name
+  address_prefix       = cidrsubnet(var.vnet_prefix, 2, 0)
 
   lifecycle {
     ignore_changes = [network_security_group_id]
