@@ -30,7 +30,7 @@ resource "azurerm_resource_group" "main" {
 }
 
 ## Networking
-resource "azurerm_network_security_group" "main" {
+resource "azurerm_network_security_group" "main_default" {
   name                = "${var.resource_prefix}-default-nsg"
   resource_group_name = azurerm_virtual_network.main.resource_group_name
   location            = azurerm_virtual_network.main.location
@@ -78,7 +78,15 @@ resource "azurerm_subnet" "main" {
 
   virtual_network_name      = azurerm_virtual_network.main.name
   address_prefix            = cidrsubnet(var.vnet_prefix, 2, 0)
-  network_security_group_id = azurerm_network_security_group.main.id
+
+  lifecycle {
+    ignore_changes = [network_security_group_id]
+  }
+}
+
+resource "azurerm_subnet_network_security_group_association" "main" {
+  subnet_id                 = azurerm_subnet.main.id
+  network_security_group_id = azurerm_network_security_group.main_default.id
 }
 
 ## Compute
