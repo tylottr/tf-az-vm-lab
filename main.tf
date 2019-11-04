@@ -98,7 +98,7 @@ resource "azurerm_public_ip" "main" {
   location            = azurerm_resource_group.main.location
   tags                = var.tags
 
-  allocation_method = "Static"
+  allocation_method = "Dynamic"
   domain_name_label = "${var.resource_prefix}-vm${count.index + 1}"
 }
 
