@@ -50,19 +50,6 @@ resource "azurerm_network_security_group" "main" {
   }
 
   security_rule {
-    name                       = "rdp-allow"
-    description                = "Allow RDP traffic to reach all inbound networks"
-    direction                  = "Inbound"
-    priority                   = "1100"
-    access                     = "Allow"
-    protocol                   = "*"
-    source_address_prefix      = "*"
-    source_port_range          = "*"
-    destination_address_prefix = "*"
-    destination_port_range     = "3389"
-  }
-
-  security_rule {
     name                       = "http-allow"
     description                = "Allow HTTP traffic to reach all inbound networks"
     direction                  = "Inbound"
