@@ -70,8 +70,6 @@ variable "vm_count" {
 
 # Locals
 locals {
-  vm_name = "${var.resource_prefix}-vm"
-
   vm_os_platforms = {
     ubuntu = {
       publisher = "Canonical"

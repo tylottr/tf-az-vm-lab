@@ -85,19 +85,19 @@ resource "azurerm_subnet" "main" {
 resource "azurerm_public_ip" "main" {
   count = var.vm_public_access ? var.vm_count : 0
 
-  name                = "${local.vm_name}${count.index + 1}-pip"
+  name                = "${var.resource_prefix}-vm${count.index + 1}-pip"
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
   tags                = var.tags
 
   allocation_method = "Static"
-  domain_name_label = "${local.vm_name}${count.index + 1}"
+  domain_name_label = "${var.resource_prefix}-vm${count.index + 1}"
 }
 
 resource "azurerm_network_interface" "main" {
   count = var.vm_count
 
-  name                = "${local.vm_name}${count.index + 1}-nic"
+  name                = "${var.resource_prefix}-vm${count.index + 1}-nic"
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
   tags                = var.tags
@@ -113,7 +113,7 @@ resource "azurerm_network_interface" "main" {
 resource "azurerm_virtual_machine" "main" {
   count = var.vm_count
 
-  name                = "${local.vm_name}${count.index + 1}"
+  name                = "${var.resource_prefix}-vm${count.index + 1}"
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
   tags                = var.tags
@@ -124,7 +124,7 @@ resource "azurerm_virtual_machine" "main" {
   delete_data_disks_on_termination = true
 
   os_profile {
-    computer_name  = "${local.vm_name}${count.index + 1}"
+    computer_name  = "${var.resource_prefix}-vm${count.index + 1}"
     admin_username = var.vm_username
     custom_data    = null
   }
@@ -137,7 +137,7 @@ resource "azurerm_virtual_machine" "main" {
   }
 
   storage_os_disk {
-    name              = "${local.vm_name}${count.index + 1}-osdisk"
+    name              = "${var.resource_prefix}-vm${count.index + 1}-osdisk"
     caching           = "ReadWrite"
     create_option     = "FromImage"
     disk_size_gb      = var.vm_disk_size
