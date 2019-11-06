@@ -41,7 +41,7 @@ resource "azurerm_storage_account" "main_logs" {
   account_replication_type = "LRS"
 }
 
-## Networking
+## Network
 resource "azurerm_network_security_group" "main_default" {
   name                = "${var.resource_prefix}-default-nsg"
   resource_group_name = azurerm_virtual_network.main.resource_group_name
