@@ -90,22 +90,26 @@ resource "azurerm_subnet_network_security_group_association" "main" {
 }
 
 ## Compute
-resource "azurerm_public_ip" "main" {
-  count = var.vm_public_access ? var.vm_count : 0
+locals {
+  vms = toset([for n in range(var.vm_count) : format("%s-vm%g", var.resource_prefix, n + 1)])
+}
 
-  name                = "${var.resource_prefix}-vm${count.index + 1}-pip"
+resource "azurerm_public_ip" "main" {
+  for_each = var.vm_public_access ? local.vms : toset([])
+
+  name                = "${each.value}-pip"
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
   tags                = var.tags
 
   allocation_method = "Dynamic"
-  domain_name_label = "${var.resource_prefix}-vm${count.index + 1}"
+  domain_name_label = "${each.value}"
 }
 
 resource "azurerm_network_interface" "main" {
-  count = var.vm_count
+  for_each = local.vms
 
-  name                = "${var.resource_prefix}-vm${count.index + 1}-nic"
+  name                = "${each.value}-nic"
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
   tags                = var.tags
@@ -114,25 +118,25 @@ resource "azurerm_network_interface" "main" {
     name                          = "ipconfig"
     subnet_id                     = azurerm_subnet.main.id
     private_ip_address_allocation = "Dynamic"
-    public_ip_address_id          = var.vm_public_access ? azurerm_public_ip.main[count.index].id : null
+    public_ip_address_id          = var.vm_public_access ? azurerm_public_ip.main[each.value].id : null
   }
 }
 
 resource "azurerm_virtual_machine" "main" {
-  count = var.vm_count
+  for_each = local.vms
 
-  name                = "${var.resource_prefix}-vm${count.index + 1}"
+  name                = "${each.value}"
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
   tags                = var.tags
 
   vm_size                          = var.vm_size
-  network_interface_ids            = [azurerm_network_interface.main[count.index].id]
+  network_interface_ids            = [azurerm_network_interface.main[each.value].id]
   delete_os_disk_on_termination    = true
   delete_data_disks_on_termination = true
 
   os_profile {
-    computer_name  = "${var.resource_prefix}-vm${count.index + 1}"
+    computer_name  = "${each.value}"
     admin_username = var.vm_username
     custom_data    = null
   }
@@ -145,7 +149,7 @@ resource "azurerm_virtual_machine" "main" {
   }
 
   storage_os_disk {
-    name              = "${var.resource_prefix}-vm${count.index + 1}-osdisk"
+    name              = "${each.value}-osdisk"
     caching           = "ReadWrite"
     create_option     = "FromImage"
     disk_size_gb      = var.vm_disk_size

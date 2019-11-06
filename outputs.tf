@@ -3,5 +3,5 @@ output "main_rg_name" {
 }
 
 output "main_vm_fqdns" {
-  value = azurerm_public_ip.main.*.fqdn
+  value = local.vms
 }
