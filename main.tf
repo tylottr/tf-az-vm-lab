@@ -65,7 +65,7 @@ resource "azurerm_network_security_group" "main_default" {
     name                       = "http-allow"
     description                = "Allow HTTP traffic to reach all inbound networks"
     direction                  = "Inbound"
-    priority                   = "1200"
+    priority                   = "1100"
     access                     = "Allow"
     protocol                   = "*"
     source_address_prefix      = "*"
