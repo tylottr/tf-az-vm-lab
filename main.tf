@@ -29,6 +29,18 @@ resource "azurerm_resource_group" "main" {
   tags     = var.tags
 }
 
+## Storage
+resource "azurerm_storage_account" "main_logs" {
+  name                = "${replace(var.resource_prefix, "-", "")}logs${random_integer.entropy.result}sa"
+  resource_group_name = azurerm_resource_group.main.name
+  location            = azurerm_resource_group.main.location
+  tags                = var.tags
+
+  account_kind             = "StorageV2"
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
+}
+
 ## Networking
 resource "azurerm_network_security_group" "main_default" {
   name                = "${var.resource_prefix}-default-nsg"
@@ -163,6 +175,11 @@ resource "azurerm_virtual_machine" "main" {
       path     = "/home/${var.vm_username}/.ssh/authorized_keys"
       key_data = tls_private_key.main.public_key_openssh
     }
+  }
+
+  boot_diagnostics {
+    enabled     = true
+    storage_uri = azurerm_storage_account.main_logs.primary_blob_endpoint
   }
 
   identity {
