@@ -115,7 +115,7 @@ resource "azurerm_public_ip" "main" {
   tags                = var.tags
 
   allocation_method = "Dynamic"
-  domain_name_label = "${each.value}"
+  domain_name_label = each.value
 }
 
 resource "azurerm_network_interface" "main" {
@@ -137,7 +137,7 @@ resource "azurerm_network_interface" "main" {
 resource "azurerm_virtual_machine" "main" {
   for_each = local.vms
 
-  name                = "${each.value}"
+  name                = each.value
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
   tags                = var.tags
@@ -148,7 +148,7 @@ resource "azurerm_virtual_machine" "main" {
   delete_data_disks_on_termination = true
 
   os_profile {
-    computer_name  = "${each.value}"
+    computer_name  = each.value
     admin_username = var.vm_username
     custom_data    = null
   }
