@@ -6,18 +6,18 @@ resource "random_integer" "entropy" {
   max = 99
 }
 
-resource "tls_private_key" "main" {
+resource "tls_private_key" "main_ssh" {
   algorithm = "RSA"
 }
 
 resource "local_file" "main_ssh_public" {
   filename          = ".terraform/.ssh/id_rsa.pub"
-  sensitive_content = tls_private_key.main.public_key_openssh
+  sensitive_content = tls_private_key.main_ssh.public_key_openssh
 }
 
 resource "local_file" "main_ssh_private" {
   filename          = ".terraform/.ssh/id_rsa"
-  sensitive_content = tls_private_key.main.private_key_pem
+  sensitive_content = tls_private_key.main_ssh.private_key_pem
   file_permission   = "0600"
 }
 
@@ -173,7 +173,7 @@ resource "azurerm_virtual_machine" "main" {
 
     ssh_keys {
       path     = "/home/${var.vm_username}/.ssh/authorized_keys"
-      key_data = tls_private_key.main.public_key_openssh
+      key_data = tls_private_key.main_ssh.public_key_openssh
     }
   }
 
