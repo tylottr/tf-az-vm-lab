@@ -44,6 +44,7 @@ Outputs
 -------
 
 This template will output the following information:
+
 |Output|Description|
 |-|-|
 |main_rg_name|The name of the main resource group|
