@@ -104,10 +104,6 @@ resource "azurerm_subnet_network_security_group_association" "main" {
 ## Compute
 locals {
   vms = toset([for n in range(var.vm_count) : format("%s-vm%g", var.resource_prefix, n + 1)])
-  ssh_public_keys = [
-    tls_private_key.main_ssh.public_key_openssh,
-    file("~/.ssh/id_rsa.pub")
-  ]
 }
 
 resource "azurerm_public_ip" "main" {
@@ -154,7 +150,7 @@ resource "azurerm_virtual_machine" "main" {
   os_profile {
     computer_name  = each.value
     admin_username = var.vm_username
-    custom_data    = templatefile("./files/setup.yml", { ssh_public_keys = local.ssh_public_keys })
+    custom_data    = null
   }
 
   storage_image_reference {
