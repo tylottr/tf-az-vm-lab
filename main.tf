@@ -101,6 +101,14 @@ resource "azurerm_subnet_network_security_group_association" "main" {
   network_security_group_id = azurerm_network_security_group.main_default.id
 }
 
+## Identity
+resource "azurerm_user_assigned_identity" "main" {
+  name                = "${var.resource_prefix}-vm-msi"
+  resource_group_name = azurerm_resource_group.main.name
+  location            = azurerm_resource_group.main.location
+  tags                = var.tags
+}
+
 ## Compute
 locals {
   vms = toset([for n in range(var.vm_count) : format("%s-vm%g", var.resource_prefix, n + 1)])
@@ -183,6 +191,7 @@ resource "azurerm_virtual_machine" "main" {
   }
 
   identity {
-    type = "SystemAssigned"
+    type         = "UserAssigned"
+    identity_ids = [azurerm_user_assigned_identity.main.id]
   }
 }
