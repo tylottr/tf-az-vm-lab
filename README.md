@@ -41,6 +41,7 @@ These are the variables used along with their defaults. For any without a value 
 |vm_size|VM Size for the VMs|Standard_B1s|
 |vm_disk_type|VM disk type for the VMs|Standard_LRS|
 |vm_disk_size|VM disk size for the VMs in GB (Minimum 30)|32|
+|vm_custom_data_file|Custom data file to be passed to the created VMs|""|
 |vm_count|Number of VMs to deploy|1|
 
 Outputs

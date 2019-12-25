@@ -74,6 +74,12 @@ variable "vm_disk_size" {
   default     = 32
 }
 
+variable "vm_custom_data_file" {
+  description = "Custom data file to be passed to the created VMs"
+  type        = string
+  default     = ""
+}
+
 variable "vm_count" {
   description = "Number of VMs to deploy"
   type        = number

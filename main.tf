@@ -158,7 +158,7 @@ resource "azurerm_virtual_machine" "main" {
   os_profile {
     computer_name  = each.value
     admin_username = var.vm_username
-    custom_data    = null
+    custom_data    = var.vm_custom_data_file != "" ? file(var.vm_custom_data_file) : null
   }
 
   storage_image_reference {
