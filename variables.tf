@@ -88,7 +88,7 @@ locals {
       deployedBy = "Terraform"
     }
   )
-  
+
   vm_os_platforms = {
     ubuntu = {
       publisher = "Canonical"
