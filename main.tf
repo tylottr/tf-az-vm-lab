@@ -26,7 +26,7 @@ resource "local_file" "main_ssh_private" {
 resource "azurerm_resource_group" "main" {
   name     = "${var.resource_prefix}-rg"
   location = var.location
-  tags     = var.tags
+  tags     = local.tags
 }
 
 ## Storage
@@ -34,7 +34,7 @@ resource "azurerm_storage_account" "main_logs" {
   name                = lower(replace("${var.resource_prefix}logs${random_integer.entropy.result}sa", "/[-_]/", ""))
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
-  tags                = var.tags
+  tags                = local.tags
 
   account_kind             = "StorageV2"
   account_tier             = "Standard"
@@ -46,7 +46,7 @@ resource "azurerm_network_security_group" "main_default" {
   name                = "${var.resource_prefix}-default-nsg"
   resource_group_name = azurerm_virtual_network.main.resource_group_name
   location            = azurerm_virtual_network.main.location
-  tags                = var.tags
+  tags                = local.tags
 
   security_rule {
     name                       = "ssh-allow"
@@ -79,7 +79,7 @@ resource "azurerm_virtual_network" "main" {
   name                = "${var.resource_prefix}-vnet"
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
-  tags                = var.tags
+  tags                = local.tags
 
   address_space = [var.vnet_prefix]
 }
@@ -106,7 +106,7 @@ resource "azurerm_user_assigned_identity" "main" {
   name                = "${var.resource_prefix}-vm-msi"
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
-  tags                = var.tags
+  tags                = local.tags
 }
 
 ## Compute
@@ -120,7 +120,7 @@ resource "azurerm_public_ip" "main" {
   name                = "${each.value}-pip"
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
-  tags                = var.tags
+  tags                = local.tags
 
   allocation_method = "Dynamic"
   domain_name_label = each.value
@@ -132,7 +132,7 @@ resource "azurerm_network_interface" "main" {
   name                = "${each.value}-nic"
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
-  tags                = var.tags
+  tags                = local.tags
 
   ip_configuration {
     name                          = "ipconfig"
@@ -148,7 +148,7 @@ resource "azurerm_virtual_machine" "main" {
   name                = each.value
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
-  tags                = var.tags
+  tags                = local.tags
 
   vm_size                          = var.vm_size
   network_interface_ids            = [azurerm_network_interface.main[each.value].id]

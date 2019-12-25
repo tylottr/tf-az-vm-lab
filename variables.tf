@@ -82,6 +82,13 @@ variable "vm_count" {
 
 # Locals
 locals {
+  tags = merge(
+    var.tags,
+    {
+      deployedBy = "Terraform"
+    }
+  )
+  
   vm_os_platforms = {
     ubuntu = {
       publisher = "Canonical"
