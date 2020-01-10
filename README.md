@@ -20,8 +20,6 @@ Prior to deployment you need the following:
 In Azure, you also need:
 * A user account or service policy with Contributor level access to the target subscription
 
-In addition to these packages, [VS Code](https://code.visualstudio.com/) is a useful, extensible code editor with plug-ins for Git, Terraform and more
-
 Variables
 ---------
 
@@ -30,7 +28,7 @@ These are the variables used along with their defaults. For any without a value 
 |Variable|Description|Default|
 |-|-|-|
 |tenant_id|The tenant id of this deployment|null|
-|subscription_id|The subcription id of this deployment|null|
+|subscription_id|The subscription id of this deployment|null|
 |location|The location of this deployment|UK South|
 |resource_prefix|A prefix for the name of the resource, used to generate the resource names|vmlab|
 |tags|Tags given to the resources created by this template|{}|
@@ -62,16 +60,12 @@ Below describes the steps to deploy this template.
 1. Set variables for the deployment
     * Terraform has a number of ways to set variables. See [here](https://www.terraform.io/docs/configuration/variables.html#assigning-values-to-root-module-variables)
 2. Log into Azure with `az login` and set your subscription with `az account set --subscription $ARM_SUBSCRIPTION_ID`
+    * Terraform has a number of ways to authenticate. See [here](https://www.terraform.io/docs/providers/azurerm/guides/azure_cli.html)
 3. Initialise Terraform with `terraform init`
     * By default, state is stored locally. State can be stored in different backends. See [here](https://www.terraform.io/docs/backends/types/index.html) for more information.
-4. Set the workspace with `terraform workspace select ENVIRONMENT` - `ENVIRONMENT`
-    * If the workspace does not exist, use `terraform workspace new ENVIRONMENT`
-5. Generate a plan with `terraform plan -out tf.plan` and apply it with `terraform apply tf.plan`
+4. Set the workspace with `terraform workspace select <replace with environment>`
+    * If the workspace does not exist, use `terraform workspace new <replace with environment>`
+5. Generate a plan with `terraform plan -out tf.plan`
+6. If the plan passes, apply it with `terraform apply tf.plan`
 
-In the event the deployment needs to be destroyed, you can run `terraform destroy`
-
-Useful Links
-------------
-
-* [Terraform Documentation](https://www.terraform.io/docs/)
-* [Azure Documentation](https://docs.microsoft.com/en-us/azure/)
+In the event the deployment needs to be destroyed, you can run `terraform destroy` in place of steps 5 and 6.
