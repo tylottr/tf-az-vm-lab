@@ -191,7 +191,7 @@ resource "azurerm_virtual_machine" "main" {
   }
 
   identity {
-    type         = "UserAssigned"
+    type         = "SystemAssigned, UserAssigned"
     identity_ids = [azurerm_user_assigned_identity.main.id]
   }
 }
