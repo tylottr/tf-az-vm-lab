@@ -30,8 +30,8 @@ resource "azurerm_resource_group" "main" {
 }
 
 ## Storage
-resource "azurerm_storage_account" "main_logs" {
-  name                = lower(replace("${var.resource_prefix}logs${random_integer.entropy.result}sa", "/[-_]/", ""))
+resource "azurerm_storage_account" "main_diag" {
+  name                = lower(replace("${var.resource_prefix}diag${random_integer.entropy.result}sa", "/[-_]/", ""))
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
   tags                = local.tags
@@ -39,6 +39,19 @@ resource "azurerm_storage_account" "main_logs" {
   account_kind             = "StorageV2"
   account_tier             = "Standard"
   account_replication_type = "LRS"
+}
+
+resource "azurerm_storage_container" "main_diag_logs" {
+  name                 = "logs"
+  storage_account_name = azurerm_storage_account.main_diag.name
+}
+
+resource "azurerm_role_assignment" "main_diag_vm_roles" {
+  for_each = toset(["Reader", "Storage Blob Data Contributor"])
+
+  scope                = azurerm_storage_account.main_diag.id
+  role_definition_name = each.value
+  principal_id         = azurerm_user_assigned_identity.main.principal_id
 }
 
 ## Network
@@ -187,7 +200,7 @@ resource "azurerm_virtual_machine" "main" {
 
   boot_diagnostics {
     enabled     = true
-    storage_uri = azurerm_storage_account.main_logs.primary_blob_endpoint
+    storage_uri = azurerm_storage_account.main_diag.primary_blob_endpoint
   }
 
   identity {

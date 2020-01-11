@@ -51,6 +51,8 @@ This template will output the following information:
 |-|-|
 |main_rg_name|The name of the main resource group|
 |main_vm_fqdns|The FQDN of the main VMs|
+|main_vm_identity_id|The ID of the user assigned identity|
+|main_diag_sa_name|The name of the storage account used for diagnostics|
 
 Deployment
 ----------
