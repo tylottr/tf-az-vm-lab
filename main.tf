@@ -41,19 +41,6 @@ resource "azurerm_storage_account" "main_diag" {
   account_replication_type = "LRS"
 }
 
-resource "azurerm_storage_container" "main_diag_logs" {
-  name                 = "logs"
-  storage_account_name = azurerm_storage_account.main_diag.name
-}
-
-resource "azurerm_role_assignment" "main_diag_vm_roles" {
-  for_each = toset(["Reader", "Storage Blob Data Contributor"])
-
-  scope                = azurerm_storage_account.main_diag.id
-  role_definition_name = each.value
-  principal_id         = azurerm_user_assigned_identity.main.principal_id
-}
-
 ## Network
 resource "azurerm_network_security_group" "main_default" {
   name                = "${var.resource_prefix}-default-nsg"
