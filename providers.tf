@@ -14,6 +14,10 @@ provider "azurerm" {
   client_secret = var.client_secret
 }
 
+provider "random" {
+  version = "~> 2.2.0"
+}
+
 provider "null" {
   version = "~> 2.1.0"
 }
