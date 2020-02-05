@@ -6,6 +6,10 @@ resource "random_integer" "entropy" {
   max = 99
 }
 
+locals {
+  resource_prefix = var.resource_prefix
+}
+
 resource "tls_private_key" "main_ssh" {
   algorithm = "RSA"
 }
@@ -24,14 +28,14 @@ resource "local_file" "main_ssh_private" {
 # Resources
 ## Resource Group
 resource "azurerm_resource_group" "main" {
-  name     = "${var.resource_prefix}-rg"
+  name     = "${local.resource_prefix}-rg"
   location = var.location
   tags     = local.tags
 }
 
 ## Storage
 resource "azurerm_storage_account" "main_diag" {
-  name                = lower(replace("${var.resource_prefix}diag${random_integer.entropy.result}sa", "/[-_]/", ""))
+  name                = lower(replace("${local.resource_prefix}diag${random_integer.entropy.result}sa", "/[-_]/", ""))
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
   tags                = local.tags
@@ -43,7 +47,7 @@ resource "azurerm_storage_account" "main_diag" {
 
 ## Network
 resource "azurerm_network_security_group" "main_default" {
-  name                = "${var.resource_prefix}-default-nsg"
+  name                = "${local.resource_prefix}-default-nsg"
   resource_group_name = azurerm_virtual_network.main.resource_group_name
   location            = azurerm_virtual_network.main.location
   tags                = local.tags
@@ -76,7 +80,7 @@ resource "azurerm_network_security_group" "main_default" {
 }
 
 resource "azurerm_virtual_network" "main" {
-  name                = "${var.resource_prefix}-vnet"
+  name                = "${local.resource_prefix}-vnet"
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
   tags                = local.tags
@@ -103,7 +107,7 @@ resource "azurerm_subnet_network_security_group_association" "main" {
 
 ## Identity
 resource "azurerm_user_assigned_identity" "main" {
-  name                = "${var.resource_prefix}-vm-msi"
+  name                = "${local.resource_prefix}-vm-msi"
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
   tags                = local.tags
@@ -111,7 +115,7 @@ resource "azurerm_user_assigned_identity" "main" {
 
 ## Compute
 locals {
-  vms = toset([for n in range(var.vm_count) : format("%s-vm%g", var.resource_prefix, n + 1)])
+  vms = toset([for n in range(var.vm_count) : format("%s-vm%g", local.resource_prefix, n + 1)])
 }
 
 resource "azurerm_public_ip" "main" {
