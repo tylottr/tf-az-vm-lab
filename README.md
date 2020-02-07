@@ -1,5 +1,5 @@
 Terraform: VM Lab Environment
-====================================
+=============================
 
 This template will create a hub-spoke environment for lab purposes.
 
@@ -51,10 +51,7 @@ This template will output the following information:
 
 |Output|Description|
 |-|-|
-|main_rg_name|The name of the main resource group|
-|main_vm_fqdns|The FQDN of the main VMs|
-|main_vm_identity_id|The ID of the user assigned identity|
-|main_diag_sa_name|The name of the storage account used for diagnostics|
+|vms|Information for the generated VMs|
 
 Deployment
 ----------
@@ -63,7 +60,7 @@ Below describes the steps to deploy this template.
 
 1. Set variables for the deployment
     * Terraform has a number of ways to set variables. See [here](https://www.terraform.io/docs/configuration/variables.html#assigning-values-to-root-module-variables)
-2. Log into Azure with `az login` and set your subscription with `az account set --subscription <replace with subscription id or name>`
+2. Log into Azure with `az login` and set your subscription with `az account set --subscription=<replace with subscription id or name>`
     * Terraform has a number of ways to authenticate. See [here](https://www.terraform.io/docs/providers/azurerm/guides/azure_cli.html)
 3. Initialise Terraform with `terraform init`
     * By default, state is stored locally. State can be stored in different backends. See [here](https://www.terraform.io/docs/backends/types/index.html) for more information.
