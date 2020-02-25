@@ -94,10 +94,6 @@ resource "azurerm_subnet" "main" {
 
   virtual_network_name = azurerm_virtual_network.main.name
   address_prefix       = cidrsubnet(var.vnet_prefix, 2, 0)
-
-  lifecycle {
-    ignore_changes = [network_security_group_id]
-  }
 }
 
 resource "azurerm_subnet_network_security_group_association" "main" {
