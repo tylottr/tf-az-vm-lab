@@ -1,26 +1,17 @@
 # Data
 data "azurerm_client_config" "current" {}
 
-resource "random_integer" "entropy" {
-  min = 0
-  max = 99
-}
-
-locals {
-  resource_prefix = var.resource_prefix
-}
-
 resource "tls_private_key" "main_ssh" {
   algorithm = "RSA"
 }
 
 resource "local_file" "main_ssh_public" {
-  filename          = ".terraform/.ssh/id_rsa.pub"
+  filename          = ".terraform/.ssh/${local.resource_prefix}-vm.id_rsa.pub"
   sensitive_content = tls_private_key.main_ssh.public_key_openssh
 }
 
 resource "local_file" "main_ssh_private" {
-  filename          = ".terraform/.ssh/id_rsa"
+  filename          = ".terraform/.ssh/${local.resource_prefix}-vm.id_rsa"
   sensitive_content = tls_private_key.main_ssh.private_key_pem
   file_permission   = "0600"
 }
@@ -35,7 +26,7 @@ resource "azurerm_resource_group" "main" {
 
 ## Storage
 resource "azurerm_storage_account" "main_diag" {
-  name                = lower(replace("${local.resource_prefix}diag${random_integer.entropy.result}sa", "/[-_]/", ""))
+  name                = lower(replace("${local.resource_prefix}diagsa", "/[-_]/", ""))
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
   tags                = local.tags
@@ -46,8 +37,8 @@ resource "azurerm_storage_account" "main_diag" {
 }
 
 ## Network
-resource "azurerm_network_security_group" "main_default" {
-  name                = "${local.resource_prefix}-default-nsg"
+resource "azurerm_network_security_group" "main" {
+  name                = "${local.resource_prefix}-nsg"
   resource_group_name = azurerm_virtual_network.main.resource_group_name
   location            = azurerm_virtual_network.main.location
   tags                = local.tags
@@ -98,7 +89,7 @@ resource "azurerm_subnet" "main" {
 
 resource "azurerm_subnet_network_security_group_association" "main" {
   subnet_id                 = azurerm_subnet.main.id
-  network_security_group_id = azurerm_network_security_group.main_default.id
+  network_security_group_id = azurerm_network_security_group.main.id
 }
 
 ## Identity
@@ -142,7 +133,7 @@ resource "azurerm_network_interface" "main" {
   }
 }
 
-resource "azurerm_virtual_machine" "main" {
+resource "azurerm_linux_virtual_machine" "main" {
   for_each = local.vms
 
   name                = each.value
@@ -150,48 +141,36 @@ resource "azurerm_virtual_machine" "main" {
   location            = azurerm_resource_group.main.location
   tags                = local.tags
 
-  vm_size                          = var.vm_size
-  network_interface_ids            = [azurerm_network_interface.main[each.value].id]
-  delete_os_disk_on_termination    = true
-  delete_data_disks_on_termination = true
+  size                  = var.vm_size
+  network_interface_ids = [azurerm_network_interface.main[each.value].id]
 
-  os_profile {
-    computer_name  = each.value
-    admin_username = var.vm_username
-    custom_data    = var.vm_custom_data_file != "" ? file(var.vm_custom_data_file) : null
+  admin_username = local.vm_admin_username
+  admin_ssh_key {
+    username   = local.vm_admin_username
+    public_key = tls_private_key.main_ssh.public_key_openssh
   }
 
-  storage_image_reference {
+  custom_data = var.vm_custom_data_file != "" ? base64encode(file(var.vm_custom_data_file)) : null
+
+  source_image_reference {
     publisher = local.vm_os.publisher
     offer     = local.vm_os.offer
     sku       = local.vm_os.sku
     version   = "latest"
   }
 
-  storage_os_disk {
-    name              = "${each.value}-osdisk"
-    caching           = "ReadWrite"
-    create_option     = "FromImage"
-    disk_size_gb      = var.vm_disk_size
-    managed_disk_type = var.vm_disk_type
-  }
-
-  os_profile_linux_config {
-    disable_password_authentication = true
-
-    ssh_keys {
-      path     = "/home/${var.vm_username}/.ssh/authorized_keys"
-      key_data = tls_private_key.main_ssh.public_key_openssh
-    }
-  }
-
-  boot_diagnostics {
-    enabled     = true
-    storage_uri = azurerm_storage_account.main_diag.primary_blob_endpoint
+  os_disk {
+    caching              = "None"
+    disk_size_gb         = var.vm_disk_size
+    storage_account_type = var.vm_disk_type
   }
 
   identity {
     type         = "SystemAssigned, UserAssigned"
     identity_ids = [azurerm_user_assigned_identity.main.id]
+  }
+
+  boot_diagnostics {
+    storage_account_uri = azurerm_storage_account.main_diag.primary_blob_endpoint
   }
 }

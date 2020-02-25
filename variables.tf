@@ -56,12 +56,6 @@ variable "vm_public_access" {
   default     = false
 }
 
-variable "vm_username" {
-  description = "Username for the VMs"
-  type        = string
-  default     = "vmadmin"
-}
-
 variable "vm_os" {
   description = "VM Operating system (Linux - centos or ubuntu)"
   type        = string
@@ -100,12 +94,16 @@ variable "vm_count" {
 
 # Locals
 locals {
+  resource_prefix = var.resource_prefix
+
   tags = merge(
     var.tags,
     {
       deployedBy = "Terraform"
     }
   )
+
+  vm_admin_username = "vmadmin"
 
   vm_os_platforms = {
     ubuntu = {
