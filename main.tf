@@ -1,6 +1,4 @@
 # Data
-data "azurerm_client_config" "current" {}
-
 resource "tls_private_key" "main_ssh" {
   algorithm = "RSA"
 }
