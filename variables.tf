@@ -1,4 +1,6 @@
-# Global
+###################
+# Global Variables
+###################
 variable "tenant_id" {
   description = "The tenant id of this deployment"
   type        = string
@@ -29,6 +31,12 @@ variable "location" {
   default     = "UK South"
 }
 
+variable "resource_group_name" {
+  description = "The name of an existing resource group - this will override the creation of a new resource group"
+  type        = string
+  default     = ""
+}
+
 variable "resource_prefix" {
   description = "A prefix for the name of the resource, used to generate the resource names"
   type        = string
@@ -41,15 +49,17 @@ variable "tags" {
   default     = {}
 }
 
-# Resource-specific
-## VNET
+##############################
+# Resource-Specific Variables
+##############################
+# Networking
 variable "vnet_prefix" {
   description = "CIDR prefix for the VNet"
   type        = string
   default     = "10.100.0.0/24"
 }
 
-## Compute
+# Compute
 variable "vm_public_access" {
   description = "Flag used to enable public access to spoke VMs"
   type        = bool
@@ -77,7 +87,7 @@ variable "vm_disk_type" {
 variable "vm_disk_size" {
   description = "VM disk size for the VMs in GB (Minimum 30)"
   type        = number
-  default     = 32
+  default     = 30
 }
 
 variable "vm_custom_data_file" {
@@ -92,7 +102,9 @@ variable "vm_count" {
   default     = 1
 }
 
+#########
 # Locals
+#########
 locals {
   resource_prefix = var.resource_prefix
 

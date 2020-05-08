@@ -1,44 +1,32 @@
-# Data
+##########
+# SSH Key
+##########
 resource "tls_private_key" "main_ssh" {
   algorithm = "RSA"
 }
 
-resource "local_file" "main_ssh_public" {
-  filename          = ".terraform/.ssh/${local.resource_prefix}-vm.id_rsa.pub"
-  sensitive_content = tls_private_key.main_ssh.public_key_openssh
-}
-
-resource "local_file" "main_ssh_private" {
-  filename          = ".terraform/.ssh/${local.resource_prefix}-vm.id_rsa"
-  sensitive_content = tls_private_key.main_ssh.private_key_pem
-  file_permission   = "0600"
-}
-
-# Resources
-## Resource Group
+#################
+# Resource Group
+#################
 resource "azurerm_resource_group" "main" {
+  count = var.resource_group_name == "" ? 1 : 0
+
   name     = "${local.resource_prefix}-rg"
   location = var.location
   tags     = local.tags
 }
 
-## Storage
-resource "azurerm_storage_account" "main_diag" {
-  name                = lower(replace("${local.resource_prefix}diagsa", "/[-_]/", ""))
-  resource_group_name = azurerm_resource_group.main.name
-  location            = azurerm_resource_group.main.location
-  tags                = local.tags
-
-  account_kind             = "StorageV2"
-  account_tier             = "Standard"
-  account_replication_type = "LRS"
+data "azurerm_resource_group" "main" {
+  name = var.resource_group_name == "" ? azurerm_resource_group.main[0].name : var.resource_group_name
 }
 
-## Network
+##########
+# Network
+##########
 resource "azurerm_network_security_group" "main" {
   name                = "${local.resource_prefix}-nsg"
-  resource_group_name = azurerm_virtual_network.main.resource_group_name
-  location            = azurerm_virtual_network.main.location
+  resource_group_name = data.azurerm_resource_group.main.name
+  location            = var.location
   tags                = local.tags
 
   security_rule {
@@ -70,8 +58,8 @@ resource "azurerm_network_security_group" "main" {
 
 resource "azurerm_virtual_network" "main" {
   name                = "${local.resource_prefix}-vnet"
-  resource_group_name = azurerm_resource_group.main.name
-  location            = azurerm_resource_group.main.location
+  resource_group_name = data.azurerm_resource_group.main.name
+  location            = var.location
   tags                = local.tags
 
   address_space = [var.vnet_prefix]
@@ -82,7 +70,7 @@ resource "azurerm_subnet" "main" {
   resource_group_name = azurerm_virtual_network.main.resource_group_name
 
   virtual_network_name = azurerm_virtual_network.main.name
-  address_prefix       = cidrsubnet(var.vnet_prefix, 2, 0)
+  address_prefixes     = [cidrsubnet(var.vnet_prefix, 2, 0)]
 }
 
 resource "azurerm_subnet_network_security_group_association" "main" {
@@ -90,37 +78,30 @@ resource "azurerm_subnet_network_security_group_association" "main" {
   network_security_group_id = azurerm_network_security_group.main.id
 }
 
-## Identity
-resource "azurerm_user_assigned_identity" "main" {
-  name                = "${local.resource_prefix}-vm-msi"
-  resource_group_name = azurerm_resource_group.main.name
-  location            = azurerm_resource_group.main.location
-  tags                = local.tags
-}
-
-## Compute
+##########
+# Compute
+##########
 locals {
-  vms = toset([for n in range(var.vm_count) : format("%s-vm%g", local.resource_prefix, n + 1)])
+  vms = toset([for n in range(var.vm_count) : format("%s-%02d", local.resource_prefix, n + 1)])
 }
 
 resource "azurerm_public_ip" "main" {
   for_each = var.vm_public_access ? local.vms : toset([])
 
   name                = "${each.value}-pip"
-  resource_group_name = azurerm_resource_group.main.name
-  location            = azurerm_resource_group.main.location
+  resource_group_name = data.azurerm_resource_group.main.name
+  location            = var.location
   tags                = local.tags
 
   allocation_method = "Dynamic"
-  domain_name_label = each.value
 }
 
 resource "azurerm_network_interface" "main" {
   for_each = local.vms
 
   name                = "${each.value}-nic"
-  resource_group_name = azurerm_resource_group.main.name
-  location            = azurerm_resource_group.main.location
+  resource_group_name = data.azurerm_resource_group.main.name
+  location            = var.location
   tags                = local.tags
 
   ip_configuration {
@@ -135,8 +116,8 @@ resource "azurerm_linux_virtual_machine" "main" {
   for_each = local.vms
 
   name                = each.value
-  resource_group_name = azurerm_resource_group.main.name
-  location            = azurerm_resource_group.main.location
+  resource_group_name = data.azurerm_resource_group.main.name
+  location            = var.location
   tags                = local.tags
 
   size                  = var.vm_size
@@ -164,11 +145,6 @@ resource "azurerm_linux_virtual_machine" "main" {
   }
 
   identity {
-    type         = "SystemAssigned, UserAssigned"
-    identity_ids = [azurerm_user_assigned_identity.main.id]
-  }
-
-  boot_diagnostics {
-    storage_account_uri = azurerm_storage_account.main_diag.primary_blob_endpoint
+    type = "SystemAssigned"
   }
 }
