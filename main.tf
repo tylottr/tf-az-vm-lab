@@ -13,7 +13,7 @@ resource "azurerm_resource_group" "main" {
 
   name     = "${local.resource_prefix}-rg"
   location = var.location
-  tags     = local.tags
+  tags     = var.tags
 }
 
 data "azurerm_resource_group" "main" {
@@ -27,7 +27,7 @@ resource "azurerm_network_security_group" "main" {
   name                = "${local.resource_prefix}-nsg"
   resource_group_name = data.azurerm_resource_group.main.name
   location            = var.location
-  tags                = local.tags
+  tags                = var.tags
 
   security_rule {
     name                       = "ssh-allow"
@@ -60,7 +60,7 @@ resource "azurerm_virtual_network" "main" {
   name                = "${local.resource_prefix}-vnet"
   resource_group_name = data.azurerm_resource_group.main.name
   location            = var.location
-  tags                = local.tags
+  tags                = var.tags
 
   address_space = [var.vnet_prefix]
 }
@@ -91,7 +91,7 @@ resource "azurerm_public_ip" "main" {
   name                = "${each.value}-pip"
   resource_group_name = data.azurerm_resource_group.main.name
   location            = var.location
-  tags                = local.tags
+  tags                = var.tags
 
   allocation_method = "Dynamic"
 }
@@ -102,7 +102,7 @@ resource "azurerm_network_interface" "main" {
   name                = "${each.value}-nic"
   resource_group_name = data.azurerm_resource_group.main.name
   location            = var.location
-  tags                = local.tags
+  tags                = var.tags
 
   ip_configuration {
     name                          = "ipconfig"
@@ -118,7 +118,7 @@ resource "azurerm_linux_virtual_machine" "main" {
   name                = each.value
   resource_group_name = data.azurerm_resource_group.main.name
   location            = var.location
-  tags                = local.tags
+  tags                = var.tags
 
   size                  = var.vm_size
   network_interface_ids = [azurerm_network_interface.main[each.value].id]
