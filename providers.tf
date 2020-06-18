@@ -1,4 +1,6 @@
+#########
 # Config
+#########
 terraform {
   required_version = ">= 0.12.24"
 
@@ -8,7 +10,9 @@ terraform {
   }
 }
 
+############
 # Providers
+############
 provider "azurerm" {
   features {}
 
