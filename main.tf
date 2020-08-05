@@ -1,15 +1,9 @@
-##########
-# SSH Key
-##########
-resource "tls_private_key" "main_ssh" {
-  algorithm = "RSA"
-}
+######################
+# Resource Management
+######################
 
-#################
-# Resource Group
-#################
 resource "azurerm_resource_group" "main" {
-  count = var.resource_group_name == "" ? 1 : 0
+  count = var.resource_group_name == null ? 1 : 0
 
   name     = "${local.resource_prefix}-rg"
   location = var.location
@@ -17,12 +11,15 @@ resource "azurerm_resource_group" "main" {
 }
 
 data "azurerm_resource_group" "main" {
-  name = var.resource_group_name == "" ? azurerm_resource_group.main[0].name : var.resource_group_name
+  name = coalesce(var.resource_group_name, azurerm_resource_group.main[0].name)
+
+  depends_on = [azurerm_resource_group.main]
 }
 
-##########
-# Network
-##########
+#############
+# Networking
+#############
+
 resource "azurerm_network_security_group" "main" {
   name                = "${local.resource_prefix}-nsg"
   resource_group_name = data.azurerm_resource_group.main.name
@@ -81,8 +78,13 @@ resource "azurerm_subnet_network_security_group_association" "main" {
 ##########
 # Compute
 ##########
+
 locals {
   vms = toset([for n in range(var.vm_count) : format("%s-%02d", local.resource_prefix, n + 1)])
+}
+
+resource "tls_private_key" "main_ssh" {
+  algorithm = "RSA"
 }
 
 resource "azurerm_public_ip" "main" {
@@ -129,7 +131,7 @@ resource "azurerm_linux_virtual_machine" "main" {
     public_key = tls_private_key.main_ssh.public_key_openssh
   }
 
-  custom_data = var.vm_custom_data_file != "" ? base64encode(file(var.vm_custom_data_file)) : null
+  custom_data = var.vm_custom_data_file != null ? base64encode(file(var.vm_custom_data_file)) : null
 
   source_image_reference {
     publisher = local.vm_os.publisher

@@ -11,67 +11,56 @@ The environment deployed contains the following resources:
 ## Prerequisites
 
 Prior to deployment you need the following:
-* [azcli](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
-* [terraform](https://www.terraform.io/) - 0.12
+
+- [azcli](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
+- [terraform](https://www.terraform.io/) - 0.13
 
 In Azure, you also need:
-* A user account or service policy with Contributor level access to the target subscription
+
+- A user account or service policy with Contributor level access to the target subscription
 
 ## Variables
 
-These are the variables used along with their defaults. For any without a value in default, the value must be filled in unless otherwise sateted otherwise the deployment will encounter failures.
-
-**Global Variables**
-
-|Variable|Description|Default Value|
-|-|-|-|
-|tenant_id|The tenant id of this deployment|`null`|
-|subscription_id|The subscription id of this deployment|`null`|
-|client_id|The client id used to authenticate to Azure|`null`|
-|client_secret|The client secret used to authenticate to Azure|`null`|
-|location|The location of this deployment|`"UK South"`|
-|resource_group_name|The name of an existing resource group - this will override the creation of a new resource group|`""`|
-|resource_prefix|A prefix for the name of the resource, used to generate the resource names|`"vmlab"`|
-|tags|Tags given to the resources created by this template|`{}`|
-
-**Resource-Specific Variables**
-
-|Variable|Description|Default Value|
-|-|-|-|
-|vnet_prefix|CIDR prefix for the VNet|`"10.100.0.0/24"`|
-|vm_public_access|Flag used to enable public access to spoke VMs|`false`|
-|vm_os|VM Operating system (Linux - ubuntu or centos)|`"ubuntu"`|
-|vm_size|VM Size for the VMs|`"Standard_B1s"`|
-|vm_disk_type|VM disk type for the VMs|`"Standard_LRS"`|
-|vm_disk_size|VM disk size for the VMs in GB (Minimum 30)|`30`|
-|vm_custom_data_file|Custom data file to be passed to the created VMs|`""`|
-|vm_count|Number of VMs to deploy|`1`|
+|Variable Name|Description|Type|Default|
+|-|-|-|-|
+|tenant_id|The tenant id of this deployment|string|`null`|
+|subscription_id|The subscription id of this deployment|string|`null`|
+|client_id|The client id of this deployment|string|`null`|
+|client_secret|The client secret of this deployment|string|`null`|
+|resource_group_name|The name of an existing resource group - this will override the creation of a new resource group|string|`null`|
+|location|The location of this deployment|string|`"Central US"`|
+|resource_prefix|A prefix for the name of the resource, used to generate the resource names|string|`"vmlab"`|
+|tags|Tags given to the resources created by this template|map(string)|`{}`|
+|vnet_prefix|CIDR prefix for the VNet|string|`"10.100.0.0/24"`|
+|vm_public_access|Flag used to enable public access to spoke VMs|bool|`false`|
+|vm_os|VM Operating system (Linux - centos or ubuntu)|string|`"ubuntu"`|
+|vm_size|VM Size for the VMs|string|`"Standard_B1s"`|
+|vm_disk_type|VM disk type for the VMs|string|`"Standard_LRS"`|
+|vm_disk_size|VM disk size for the VMs in GB (Minimum 30)|number|`30`|
+|vm_custom_data_file|Custom data file to be passed to the created VMs|string|`null`|
+|vm_count|Number of VMs to deploy|number|`1`|
 
 ## Outputs
 
-This template will output the following information:
-
-|Output|Description|
+|Output Name|Description|
 |-|-|
 |resource_group_name|Resource group of the VMs|
 |vm_ids|List of VM Resource IDs|
-|vm_names|List of VM names|
+|vm_names|List of VM names mapped to public IP|
 |vm_identity_principal_ids|List of VM Identity Principal IDs|
 |admin_username|Username of the VM Admin|
 |admin_private_key|Private key data for the vm admin|
 
-## Deployment
-
-Below describes the steps to deploy this template.
+# Deployment
 
 1. Set variables for the deployment
-    * Terraform has a number of ways to set variables. See [here](https://www.terraform.io/docs/configuration/variables.html#assigning-values-to-root-module-variables) for more information.
-2. Log into Azure with `az login` and set your subscription with `az account set --subscription='<REPLACE_WITH_SUBSCRIPTION_ID_OR_NAME>'`
-    * Terraform has a number of ways to authenticate. See [here](https://www.terraform.io/docs/providers/azurerm/guides/azure_cli.html) for more information.
+    - Terraform has a number of ways to set variables. See [here](https://www.terraform.io/docs/configuration/variables.html#assigning-values-to-root-module-variables) for more information.
+2. Log into Azure with `az login` and set your subscription with `az account set --subscription='REPLACE_WITH_SUBSCRIPTION_ID_OR_NAME'`
+    - Terraform has a number of ways to authenticate. See [here](https://www.terraform.io/docs/providers/azurerm/guides/azure_cli.html) for more information.
 3. Initialise Terraform with `terraform init`
-    * By default, state is stored locally. State can be stored in different backends. See [here](https://www.terraform.io/docs/backends/types/index.html) for more information.
-4. Set the workspace with `terraform workspace select <REPLACE_WITH_ENVIRONMENT>`
-    * If the workspace does not exist, use `terraform workspace new <REPLACE_WITH_ENVIRONMENT>`
+    - By default, state is stored locally. State can be stored in different backends. See [here](https://www.terraform.io/docs/backends/types/index.html) for more information.
+4. Set the workspace with `terraform workspace select REPLACE_WITH_WORKSPACE_NAME`
+    - If the workspace does not exist, use `terraform workspace new REPLACE_WITH_WORKSPACE_NAME`
 5. Generate a plan with `terraform plan -out tf.plan`
 6. If the plan passes, apply it with `terraform apply tf.plan`
 
