@@ -131,16 +131,16 @@ locals {
   vm_admin_username = "vmadmin"
 
   vm_os_platforms = {
-    ubuntu = {
-      publisher = "Canonical"
-      offer     = "UbuntuServer"
-      sku       = "18.04-LTS"
+    "ubuntu" = {
+      "publisher" = "Canonical"
+      "offer"     = "UbuntuServer"
+      "sku"       = "18.04-LTS"
     }
 
-    centos = {
-      publisher = "OpenLogic"
-      offer     = "CentOS"
-      sku       = "7-CI"
+    "centos" = {
+      "publisher" = "OpenLogic"
+      "offer"     = "CentOS"
+      "sku"       = "7-CI"
     }
   }
 

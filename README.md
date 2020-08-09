@@ -51,7 +51,7 @@ In Azure, you also need:
 |admin_username|Username of the VM Admin|
 |admin_private_key|Private key data for the vm admin|
 
-# Deployment
+## Deployment
 
 1. Set variables for the deployment
     - Terraform has a number of ways to set variables. See [here](https://www.terraform.io/docs/configuration/variables.html#assigning-values-to-root-module-variables) for more information.
