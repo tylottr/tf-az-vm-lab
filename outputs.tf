@@ -1,10 +1,15 @@
-##################
-# VM Details
-##################
+#########
+# Global
+#########
+
 output "resource_group_name" {
   description = "Resource group of the VMs"
   value       = data.azurerm_resource_group.main.name
 }
+
+###################
+# Virtual Machines
+###################
 
 output "vm_ids" {
   description = "List of VM Resource IDs"
