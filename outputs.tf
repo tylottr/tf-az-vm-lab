@@ -4,7 +4,7 @@
 
 output "resource_group_name" {
   description = "Resource group of the VMs"
-  value       = data.azurerm_resource_group.main.name
+  value       = azurerm_resource_group.main.name
 }
 
 ###################

@@ -41,12 +41,6 @@ variable "client_secret" {
   default     = null
 }
 
-variable "resource_group_name" {
-  description = "The name of an existing resource group - this will override the creation of a new resource group"
-  type        = string
-  default     = null
-}
-
 variable "location" {
   description = "The location of this deployment"
   type        = string

@@ -27,7 +27,6 @@ In Azure, you also need:
 |subscription_id|The subscription id of this deployment|string|`null`|
 |client_id|The client id of this deployment|string|`null`|
 |client_secret|The client secret of this deployment|string|`null`|
-|resource_group_name|The name of an existing resource group - this will override the creation of a new resource group|string|`null`|
 |location|The location of this deployment|string|`"Central US"`|
 |resource_prefix|A prefix for the name of the resource, used to generate the resource names|string|`"vmlab"`|
 |tags|Tags given to the resources created by this template|map(string)|`{}`|

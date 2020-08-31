@@ -3,17 +3,9 @@
 ######################
 
 resource "azurerm_resource_group" "main" {
-  count = var.resource_group_name == null ? 1 : 0
-
   name     = "${local.resource_prefix}-rg"
   location = var.location
   tags     = var.tags
-}
-
-data "azurerm_resource_group" "main" {
-  name = coalesce(var.resource_group_name, azurerm_resource_group.main[0].name)
-
-  depends_on = [azurerm_resource_group.main]
 }
 
 #############
@@ -22,7 +14,7 @@ data "azurerm_resource_group" "main" {
 
 resource "azurerm_network_security_group" "main" {
   name                = "${local.resource_prefix}-nsg"
-  resource_group_name = data.azurerm_resource_group.main.name
+  resource_group_name = azurerm_resource_group.main.name
   location            = var.location
   tags                = var.tags
 
@@ -55,7 +47,7 @@ resource "azurerm_network_security_group" "main" {
 
 resource "azurerm_virtual_network" "main" {
   name                = "${local.resource_prefix}-vnet"
-  resource_group_name = data.azurerm_resource_group.main.name
+  resource_group_name = azurerm_resource_group.main.name
   location            = var.location
   tags                = var.tags
 
@@ -91,7 +83,7 @@ resource "azurerm_public_ip" "main" {
   for_each = var.vm_public_access ? local.vms : toset([])
 
   name                = "${each.value}-pip"
-  resource_group_name = data.azurerm_resource_group.main.name
+  resource_group_name = azurerm_resource_group.main.name
   location            = var.location
   tags                = var.tags
 
@@ -102,7 +94,7 @@ resource "azurerm_network_interface" "main" {
   for_each = local.vms
 
   name                = "${each.value}-nic"
-  resource_group_name = data.azurerm_resource_group.main.name
+  resource_group_name = azurerm_resource_group.main.name
   location            = var.location
   tags                = var.tags
 
@@ -118,7 +110,7 @@ resource "azurerm_linux_virtual_machine" "main" {
   for_each = local.vms
 
   name                = each.value
-  resource_group_name = data.azurerm_resource_group.main.name
+  resource_group_name = azurerm_resource_group.main.name
   location            = var.location
   tags                = var.tags
 
